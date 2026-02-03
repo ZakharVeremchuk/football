@@ -3,6 +3,7 @@ package com.packt.football;
 import com.packt.football.exceptions.NotFoundException;
 import com.packt.football.model.Player;
 import com.packt.football.service.FootballService;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,27 +32,26 @@ public class PlayerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Player> readPlayer(@PathVariable String id) {
-        try {
-            Player player = footballService.getPlayer(id);
-            return new ResponseEntity<>(player, HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Player player = footballService.getPlayer(id);
+        return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
     @PostMapping
-    public void createPlayer(@RequestBody Player player) {
+    public ResponseEntity<HttpStatus> createPlayer(@RequestBody Player player) {
         footballService.addPlayer(player);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePlayer(@PathVariable String id) {
+    public ResponseEntity<HttpStatus> deletePlayer(@PathVariable String id) {
         footballService.deletePlayer(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}")
-    public Player updatePlayer(@PathVariable String id, @RequestBody Player player) {
-        return footballService.updatePlayer(player);
+    public ResponseEntity<Player> updatePlayer(@PathVariable String id, @RequestBody Player player) {
+        Player playerResponse = footballService.updatePlayer(player);
+        return new ResponseEntity<>(playerResponse, HttpStatus.OK);
     }
 
     @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Not found")
